@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Button } from 'react-bootstrap';
-import { getBooks } from '../api/bookData';
 import { useAuth } from '../utils/context/authContext';
+import { getBooks } from '../api/bookData';
 import BookCard from '../components/BookCard';
 
 function Home() {
@@ -14,13 +14,14 @@ function Home() {
   const { user } = useAuth();
 
   // TODO: create a function that makes the API call to get all the books
-  const getAllTheBooks = () => {
+  const getAllBooksByUser = () => {
+    // getBooks(user.uid).then((response) => setBooks(response))
     getBooks(user.uid).then(setBooks);
   };
 
   // TODO: make the call to the API to get all the books on component render
   useEffect(() => {
-    getAllTheBooks();
+    getAllBooksByUser();
   }, []);
 
   return (
@@ -30,9 +31,7 @@ function Home() {
       </Link>
       <div className="d-flex flex-wrap">
         {/* TODO: map over books here using BookCard component */}
-        {books.map((book) => (
-          <BookCard key={book.firebaseKey} bookObj={book} onUpdate={getAllTheBooks} />
-        ))}
+        {books.map((book) => <BookCard key={book.firebaseKey} bookObj={book} onUpdate={getAllBooksByUser} />)}
       </div>
 
     </div>

@@ -1,16 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
+import { PropTypes } from 'prop-types';
+import { Button, Card } from 'react-bootstrap';
 import Link from 'next/link';
 import { deleteBook } from '../api/bookData';
 
-function BookCard({ bookObj, onUpdate }) {
-  // FOR DELETE, WE NEED TO REMOVE THE BOOK AND HAVE THE VIEW RERENDER,
-  // SO WE PASS THE FUNCTION FROM THE PARENT THAT GETS THE BOOKS
+export default function BookCard({ bookObj, onUpdate }) {
   const deleteThisBook = () => {
-    if (window.confirm(`Delete ${bookObj.title}?`)) {
-      deleteBook(bookObj.firebaseKey).then(() => onUpdate());
+    if (window.confirm(`Are you sure you wanna delete ${bookObj.title}?`)) {
+      deleteBook(bookObj.firebaseKey).then(() => {
+        onUpdate();
+      });
     }
   };
 
@@ -38,13 +37,11 @@ function BookCard({ bookObj, onUpdate }) {
 
 BookCard.propTypes = {
   bookObj: PropTypes.shape({
-    image: PropTypes.string,
-    title: PropTypes.string,
-    sale: PropTypes.bool,
-    price: PropTypes.string,
     firebaseKey: PropTypes.string,
+    image: PropTypes.string,
+    price: PropTypes.string,
+    sale: PropTypes.bool,
+    title: PropTypes.string,
   }).isRequired,
   onUpdate: PropTypes.func.isRequired,
 };
-
-export default BookCard;

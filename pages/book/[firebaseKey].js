@@ -1,19 +1,22 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { viewBookDetails } from '../../api/mergedData';
+import viewBookDetails from '../../api/mergedData';
 
 export default function ViewBook() {
+  // TODO: set state for the book
   const [bookDetails, setBookDetails] = useState({});
+
+  // TODO: use the router to get the query
   const router = useRouter();
+  console.warn(router);
 
   // TODO: grab firebaseKey from url
   const { firebaseKey } = router.query;
-
   // TODO: make call to API layer to get the data
   useEffect(() => {
     viewBookDetails(firebaseKey).then(setBookDetails);
-  }, [firebaseKey]);
+  }, []);
 
   return (
     <div className="mt-5 d-flex flex-wrap">
