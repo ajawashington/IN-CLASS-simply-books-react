@@ -18,7 +18,7 @@ export default function BookCard({ bookObj, onUpdate }) {
       <Card.Img variant="top" src={bookObj.image} alt={bookObj.title} style={{ height: '400px' }} />
       <Card.Body>
         <Card.Title>{bookObj.title}</Card.Title>
-        <p className="card-text bold">{bookObj.sale && <span>SALE<br /></span> } ${bookObj.price}</p>
+        <p className="card-text bold">{bookObj.sale && <span>SALE<br /></span> } ${bookObj.price.toFixed(2)}</p>
         {/* DYNAMIC LINK TO VIEW THE BOOK DETAILS  */}
         <Link href={`/book/${bookObj.firebaseKey}`} passHref>
           <Button variant="primary" className="m-2">VIEW</Button>
@@ -39,7 +39,7 @@ BookCard.propTypes = {
   bookObj: PropTypes.shape({
     firebaseKey: PropTypes.string,
     image: PropTypes.string,
-    price: PropTypes.string,
+    price: PropTypes.number,
     sale: PropTypes.bool,
     title: PropTypes.string,
   }).isRequired,

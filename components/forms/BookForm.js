@@ -1,35 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import FloatingLabel from 'react-bootstrap/FloatingLabel';
-import Form from 'react-bootstrap/Form';
-import { Button } from 'react-bootstrap';
-import { useAuth } from '../../utils/context/authContext';
+import { Form, FloatingLabel, Button } from 'react-bootstrap';
+import { useRouter } from 'next/router';
 import { getAuthors } from '../../api/authorData';
+import { useAuth } from '../../utils/context/authContext';
 import { createBook, updateBook } from '../../api/bookData';
 
-const initialState = {
+const intialState = {
+  title: '',
   description: '',
   image: '',
-  price: '',
+  price: '0',
+  author_id: '',
   sale: false,
-  title: '',
 };
 
-function BookForm({ obj }) {
-  const [formInput, setFormInput] = useState(initialState);
+export default function BookForm({ obj }) {
+  const { user } = useAuth();
+  const [formInput, setFormInput] = useState({ ...intialState, uid: user.uid });
   const [authors, setAuthors] = useState([]);
   const router = useRouter();
-  const { user } = useAuth();
 
   useEffect(() => {
     getAuthors(user.uid).then(setAuthors);
-
-    if (obj.firebaseKey) setFormInput(obj);
-  }, [obj, user]);
+    if (obj.firebaseKey) {
+      setFormInput(obj);
+    }
+  }, [obj]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     setFormInput((prevState) => ({
       ...prevState,
       [name]: value,
@@ -38,10 +39,15 @@ function BookForm({ obj }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const payload = {
+      ...formInput,
+      price: +formInput.price, // Convert price to a number with unary plus operator
+    };
+
     if (obj.firebaseKey) {
-      updateBook(formInput).then(() => router.push(`/book/${obj.firebaseKey}`));
+      updateBook(payload).then(() => router.push(`/book/${obj.firebaseKey}`));
     } else {
-      const payload = { ...formInput, uid: user.uid };
       createBook(payload).then(({ name }) => {
         const patchPayload = { firebaseKey: name };
         updateBook(patchPayload).then(() => {
@@ -82,7 +88,7 @@ function BookForm({ obj }) {
       {/* PRICE INPUT  */}
       <FloatingLabel controlId="floatingInput3" label="Book Price" className="mb-3">
         <Form.Control
-          type="text"
+          type="number"
           placeholder="Enter price"
           name="price"
           value={formInput.price}
@@ -95,10 +101,10 @@ function BookForm({ obj }) {
       <FloatingLabel controlId="floatingSelect" label="Author">
         <Form.Select
           aria-label="Author"
-          name="author_id"
-          onChange={handleChange}
           className="mb-3"
-          value={obj.author_id} // FIXME: modify code to remove error
+          name="author_id"
+          value={formInput.author_id}
+          onChange={handleChange}
           required
         >
           <option value="">Select an Author</option>
@@ -134,8 +140,8 @@ function BookForm({ obj }) {
         type="switch"
         id="sale"
         name="sale"
+        value={formInput.sale}
         label="On Sale?"
-        checked={formInput.sale}
         onChange={(e) => {
           setFormInput((prevState) => ({
             ...prevState,
@@ -152,18 +158,16 @@ function BookForm({ obj }) {
 
 BookForm.propTypes = {
   obj: PropTypes.shape({
+    title: PropTypes.string,
     description: PropTypes.string,
+    author_id: PropTypes.string,
+    firebaseKey: PropTypes.string,
     image: PropTypes.string,
     price: PropTypes.string,
     sale: PropTypes.bool,
-    title: PropTypes.string,
-    author_id: PropTypes.string,
-    firebaseKey: PropTypes.string,
   }),
 };
 
 BookForm.defaultProps = {
-  obj: initialState,
+  obj: intialState,
 };
-
-export default BookForm;

@@ -9,7 +9,6 @@ export default function ViewBook() {
 
   // TODO: use the router to get the query
   const router = useRouter();
-  console.warn(router);
 
   // TODO: grab firebaseKey from url
   const { firebaseKey } = router.query;
